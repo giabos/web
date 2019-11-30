@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Q</title>
+</head>
+<body>
+    
+    <script type="module">
+    
+    
+import { html, component, useState, useEffect } from 'https://unpkg.com/haunted/haunted';
+import crypto from 'https://unpkg.com/crypto-esm@0.0.5/dist/crypto-esm.mjs';
+import 'https://unpkg.com/console-log-div';
+const {AES} = crypto;
+
+let p1 = localStorage.getItem("p1");
+if (!p1) {
+	p1 = prompt("code");
+    localStorage.setItem("p1", p1);
+}
+const pass = p1.substr(2);
+const url = 'https://kvdb.io/MNUDuMSNBp9ab5f9mbQKTT/' + p1.substr(0,2);
+
+const decrypt = text => AES.decrypt(text, pass).toString(crypto.enc.Utf8);
+
+
+const styles=`
+
+.collection {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.card {
+	display: inline-block;
+	width: 200px;
+	height: 200px;
+	background-size: cover;
+	position: relative;
+	margin: 5px;
+}
+
+.card a {
+	text-decoration: none;
+	color: white;
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	border-radius: 50%;
+	text-align: center;
+	position: absolute;
+	text-height: 20px;
+}
+
+a.y {	
+	top: 30px;
+	left: 5px;
+	background-color: CornflowerBlue;
+}
+
+a.qr {
+	top: 5px;
+	left: 5px;
+	background-color: red;
+}
+
+.card span {
+	position: absolute;
+	right: 0; 
+	bottom: 0;
+	left: 0;
+	background-color: rgba(0,0,0,0.4);
+	color: white;
+	padding: 5px 2px;
+	
+}
+
+`;
+
+const Card = c => html`<div class="card" style="background-image: url(${c.img})">
+	<a class="qr" target="_blank" href="${c.qr}">Q</a>
+	<a class="y" target="_blank" href="${c.y}">Y</a>
+	<span>${c.text}</span>
+</div>`;
+
+function App () {
+    const [list, setList] = useState([]);
+  	useEffect(() => {
+    	fetch(url).then(a => a.text()).then(t => setList(JSON.parse(decrypt(t))));
+    },[]);
+  
+	return html`
+        <style>${styles}</style>
+		<div class="collection">
+			${list.map(c => Card(c))}
+		</div>
+	`; 
+}
+
+customElements.define('custom-root', component(App));
+    
+    </script>
+
+    <custom-root></custom-root>
+
+</body>
+</html>
