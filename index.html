@@ -89,6 +89,8 @@ a.qr {
 
 `;
 
+const showSkipped = location.hash === "#skipped";
+
 const Card = c => html`<div class="card" style="background-image: url(${c.img})">
 	<a class="qr" target="_blank" href="${c.qr}">Q</a>
 	<a class="y" target="_blank" href="${c.y}">Y</a>
