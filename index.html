@@ -104,7 +104,7 @@ function App () {
 	return html`
         <style>${styles}</style>
 		<div class="collection">
-			${list.map(c => Card(c))}
+			${list.filter(c => (!c.skipped && !showSkipped) || (c.skipped && showSkipped)).map(c => Card(c))}
 		</div>
 	`; 
 }
