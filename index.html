@@ -80,7 +80,7 @@ a.qr {
 	background-color: red;
 }
 
-.card span {
+.card footer {
 	position: absolute;
 	right: 0; 
 	bottom: 0;
@@ -92,22 +92,54 @@ a.qr {
 	border-bottom-right-radius: 5px;
 }
 
+.card span {
+	position: absolute;
+	right: 0; 
+	top: 0;
+	background-color: rgba(0,0,0,0.4);
+	color: white;
+	padding: 3px 2px;
+	font-size: x-small;
+}
+
 `;
+
+
+function inSequence (list, handler) {
+  return list.reduce((p, item) => {
+     return p.then(() => handler(item));
+  }, Promise.resolve()); // initial
+}
+
+function cleanedDate (d) {
+	if (!d) return d;
+	return d.replace(/(\w{3})\w+/g, (_,a) => a).replace(',', '').replace(' - ', ' ');
+}
 
 const showSkipped = location.hash === "#skipped";
 
 const Card = c => html`<div class="card" style="background-image: url(${c.img})">
 	<a class="qr" target="_blank" href="${c.qr}">Q</a>
 	<a class="y" target="_blank" href="${c.y}">Y</a>
-	<span>${c.text}</span>
+    ${c.refreshDate ? html`<span>${c.refreshDate}</span>` : null}
+	<footer>${c.text}</footer>
 </div>`;
 
 function App () {
-    const [list, setList] = useState([]);
+	const [list, setList] = useState([]);
+    useEffect(() => {
+		inSequence(list.filter(a => !a.skipped && a.qr), item => {
+			console.log("query", item.qr)
+			return fetch(`https://gibo-chl.azurewebsites.net/scrap?url=${encodeURIComponent(item.qr)}`)
+					.then(a => a.json()).then(resp => {
+						console.log(resp);
+						item.refreshDate = cleanedDate(resp.data);
+					});
+		}).then(() => setList(list));
+    }, [list]);
   	useEffect(() => {
     	fetch(url).then(a => a.text()).then(t => setList(JSON.parse(decrypt(t))));
     },[]);
-  
 	return html`
         <style>${styles}</style>
 		<div class="collection">
