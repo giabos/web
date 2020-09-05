@@ -13,7 +13,7 @@
     
 import { html, component, useState, useEffect } from 'https://unpkg.com/haunted/haunted';
 import crypto from 'https://unpkg.com/crypto-esm@0.0.5/dist/crypto-esm.mjs';
-import 'https://unpkg.com/console-log-div';
+//import 'https://unpkg.com/console-log-div';
 const {AES} = crypto;
 
 let p1 = localStorage.getItem("p1");
@@ -129,12 +129,9 @@ function App () {
 	const [list, setList] = useState([]);
     useEffect(() => {
 		inSequence(list.filter(a => !a.skipped && a.qr), item => {
-			console.log("query", item.qr)
+			console.log(".");
 			return fetch(`https://gibo-chl.azurewebsites.net/scrap?url=${encodeURIComponent(item.qr)}`)
-					.then(a => a.json()).then(resp => {
-						console.log(resp);
-						item.refreshDate = cleanedDate(resp.data);
-					});
+					.then(a => a.json()).then(resp => item.refreshDate = cleanedDate(resp.data));
 		}).then(() => setList(list));
     }, [list]);
   	useEffect(() => {
