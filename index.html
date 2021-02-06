@@ -127,13 +127,12 @@ const Card = c => html`<div class="card" style="background-image: url(${c.img})"
 
 function App () {
 	const [list, setList] = useState([]);
-    useEffect(() => {
+    /*useEffect(() => {
 		inSequence(list.filter(a => !a.skipped && a.qr), item => {
-			console.log(".");
 			return fetch(`https://gibo-chl.azurewebsites.net/scrap?url=${encodeURIComponent(item.qr)}`)
 					.then(a => a.json()).then(resp => item.refreshDate = cleanedDate(resp.data));
 		}).then(() => setList(list));
-    }, [list]);
+    }, [list]);*/
   	useEffect(() => {
     	fetch(url).then(a => a.text()).then(t => setList(JSON.parse(decrypt(t))));
     },[]);
