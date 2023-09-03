@@ -150,6 +150,7 @@ function App () {
 		<div class="collection">
 			${list.filter(c => (!c.skipped && !showSkipped) || (c.skipped && showSkipped)).map(c => Card(c))}
 		</div>
+        <hr>
 		<div class="collection">
 			${list2.map(c => Card({qr: c.url, img: c.profileImgUrl, refreshDate: c.dateStr, text: c.location}))}
 		</div>        
