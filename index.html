@@ -11,9 +11,8 @@
     <script type="module">
     
     
-import { html, component, useState, useEffect } from 'https://unpkg.com/haunted@4.7.0/haunted.js';
+import { html, component, useState, useEffect } from 'https://unpkg.com/haunted@4.8.0/haunted.js';
 import crypto from 'https://unpkg.com/crypto-esm@0.0.5/dist/crypto-esm.mjs';
-//import 'https://unpkg.com/console-log-div@0.6.3/console-log-div.js';
 const {AES} = crypto;
 
 let p1 = localStorage.getItem("p1");
@@ -133,6 +132,16 @@ function App () {
 					.then(a => a.json()).then(resp => item.refreshDate = cleanedDate(resp.data));
 		}).then(() => setList(list));
     }, [list]);*/
+
+	const [list2, setList2] = useState([]);
+    useEffect(() => {
+        if (list.length > 0) {
+            fetch(`https://hilarious-jay-coveralls.cyclic.app/scrape?url=${encodeURIComponent(list[list.length-1].qr)}`)
+					.then(a => a.json()).then(resp => setList2(resp));
+        }
+    }, [list]);
+
+    
   	useEffect(() => {
     	fetch(url).then(a => a.text()).then(t => setList(JSON.parse(decrypt(t))));
     },[]);
@@ -141,6 +150,9 @@ function App () {
 		<div class="collection">
 			${list.filter(c => (!c.skipped && !showSkipped) || (c.skipped && showSkipped)).map(c => Card(c))}
 		</div>
+		<div class="collection">
+			${list2.map(c => Card({qr: c.url, img: c.profileImgUrl, refreshDate: c.dateStr, text: c.location}))}
+		</div>        
 	`; 
 }
 
