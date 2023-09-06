@@ -136,8 +136,9 @@ function App () {
 	const [list2, setList2] = useState([]);
     useEffect(() => {
         if (list.length > 0) {
-            fetch(`https://hilarious-jay-coveralls.cyclic.app/scrape?url=${encodeURIComponent(list[list.length-1].qr)}`)
-					.then(a => a.json()).then(resp => setList2(resp));
+	    list.filter(a => !!a.scrape).forEach(item => 
+                fetch(`https://hilarious-jay-coveralls.cyclic.app/scrape?url=${encodeURIComponent(item.qr)}`)
+		    .then(a => a.json()).then(resp => setList2(l => [...l, ...resp])));
         }
     }, [list]);
 
