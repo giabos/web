@@ -41,6 +41,7 @@ const styles=`
 	position: relative;
 	margin: 5px;
 	border-radius: 5px;
+    cursor: pointer;
 }
 
 @media (max-width: 450px) {
@@ -68,13 +69,13 @@ const styles=`
 }
 
 a.y {	
-	top: 40px;
+	top: 5px;
 	left: 5px;
 	background-color: CornflowerBlue;
 }
 
 a.qr {
-	top: 5px;
+	top: 40px;
 	left: 5px;
 	background-color: red;
 }
@@ -112,20 +113,28 @@ function inSequence (list, handler) {
 
 function cleanedDate (d) {
 	if (!d) return d;
-	return d.replace(/(\w{3})\w+/g, (_,a) => a).replace(',', '').replace(' - ', ' ');
+	return d.replace(/(\w{3})\w+$/g, (_,a) => a).replace(',', '').replace(' - ', ' ');
 }
 
 const showSkipped = location.hash === "#skipped";
 
-const Card = c => html`<div class="card" style="background-image: url(${c.img})">
-	<a class="qr" target="_blank" href="${c.qr}">Q</a>
-	<a class="y" target="_blank" href="${c.y}">Y</a>
+const goto = url => evt => {
+    evt.preventDefault();
+    window.open(url, '_blank');
+    return false;
+}
+
+const Card = c => html`<div class="card" @click="${goto(c.qr)}" style="background-image: url(${c.img})">
+	${false ? html`<a class="qr" target="_blank" href="${c.qr}">Q</a>` : null}
+	${c.y ? html`<a class="y" target="_blank" href="#" @click="${goto(c.y)}">Y</a>` : null}
     ${c.refreshDate ? html`<span>${c.refreshDate}</span>` : null}
 	<footer>${c.text}</footer>
 </div>`;
 
 function App () {
 	const [list, setList] = useState([]);
+    const [showAll, setShowAll] = useState(false);
+    
     /*useEffect(() => {
 		inSequence(list.filter(a => !a.skipped && a.qr), item => {
 			return fetch(`https://gibo-chl.azurewebsites.net/scrap?url=${encodeURIComponent(item.qr)}`)
@@ -152,8 +161,13 @@ function App () {
 			${list.filter(c => (!c.skipped && !showSkipped) || (c.skipped && showSkipped)).map(c => Card(c))}
 		</div>
         <hr>
+            <label>
+            <input type="checkbox" .checked=${showAll} @click="${() => setShowAll(x => !x)}}">
+            show all
+            </label>
+        <hr>
 		<div class="collection">
-			${list2.map(c => Card({qr: c.url, img: c.profileImgUrl, refreshDate: c.dateStr, text: c.location}))}
+			${list2.filter(c => showAll || /^\s*\d{2}\:\d{2}\s*$/.test(c.dateStr)).map(c => Card({qr: c.url, img: c.profileImgUrl, refreshDate: c.dateStr, text: c.location}))}
 		</div>        
 	`; 
 }
