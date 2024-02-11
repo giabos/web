@@ -1,32 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Q</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Q</title>
 </head>
+
 <body>
-    
-    <script type="module">
-    
-    
-import { html, component, useState, useEffect } from 'https://unpkg.com/haunted@4.8.0/haunted.js';
-import crypto from 'https://unpkg.com/crypto-esm@0.0.5/dist/crypto-esm.mjs';
-const {AES} = crypto;
 
-let p1 = localStorage.getItem("p1");
-if (!p1) {
-	p1 = prompt("code");
-    localStorage.setItem("p1", p1);
-}
-const pass = p1.substr(2);
-const url = 'https://kvdb.io/MNUDuMSNBp9ab5f9mbQKTT/' + p1.substr(0,2);
-
-const decrypt = text => AES.decrypt(text, pass).toString(crypto.enc.Utf8);
+	<script type="module">
 
 
-const styles=`
+		import { html, component, useState, useEffect } from 'https://unpkg.com/haunted@4.8.0/haunted.js';
+		import crypto from 'https://unpkg.com/crypto-esm@0.0.5/dist/crypto-esm.mjs';
+		const { AES } = crypto;
+
+		let p1 = localStorage.getItem("p1");
+		if (!p1) {
+			p1 = prompt("code");
+			localStorage.setItem("p1", p1);
+		}
+		const pass = p1.substr(2);
+		const url = 'https://kvdb.io/MNUDuMSNBp9ab5f9mbQKTT/' + p1.substr(0, 2);
+
+		const decrypt = text => AES.decrypt(text, pass).toString(crypto.enc.Utf8);
+
+
+		const styles = `
 
 .collection {
 	display: flex;
@@ -105,78 +107,79 @@ a.qr {
 `;
 
 
-function inSequence (list, handler) {
-  return list.reduce((p, item) => {
-     return p.then(() => handler(item));
-  }, Promise.resolve()); // initial
-}
+		function inSequence(list, handler) {
+			return list.reduce((p, item) => {
+				return p.then(() => handler(item));
+			}, Promise.resolve()); // initial
+		}
 
-function cleanedDate (d) {
-	if (!d) return d;
-	return d.replace(/(\w{3})\w+$/g, (_,a) => a).replace(',', '').replace(' - ', ' ');
-}
+		function cleanedDate(d) {
+			if (!d) return d;
+			return d.replace(/(\w{3})\w+$/g, (_, a) => a).replace(',', '').replace(' - ', ' ');
+		}
 
-const showSkipped = location.hash === "#skipped";
+		const showSkipped = location.hash === "#skipped";
 
-const goto = url => evt => {
-    evt.preventDefault();
-    window.open(url, '_blank');
-    return false;
-}
+		const goto = url => evt => {
+			evt.preventDefault();
+			window.open(url, '_blank');
+			return false;
+		}
 
-const Card = c => html`<div class="card" @click="${goto(c.qr)}" style="background-image: url(${c.img})">
-	${false ? html`<a class="qr" target="_blank" href="${c.qr}">Q</a>` : null}
-	${c.y ? html`<a class="y" target="_blank" href="#" @click="${goto(c.y)}">Y</a>` : null}
-    ${c.refreshDate ? html`<span>${c.refreshDate}</span>` : null}
-	<footer>${c.text}</footer>
-</div>`;
+		const Card = c => html`<div class="card" @click="${goto(c.qr)}" style="background-image: url(${c.img})">
+				${false ? html`<a class="qr" target="_blank" href="${c.qr}">Q</a>` : null}
+				${c.y ? html`<a class="y" target="_blank" href="#" @click="${goto(c.y)}">Y</a>` : null}
+				${c.refreshDate ? html`<span>${c.refreshDate}</span>` : null}
+				<footer>${c.text}</footer>
+			</div>`;
 
-function App () {
-	const [list, setList] = useState([]);
-    const [showAll, setShowAll] = useState(false);
-    
-    /*useEffect(() => {
-		inSequence(list.filter(a => !a.skipped && a.qr), item => {
-			return fetch(`https://gibo-chl.azurewebsites.net/scrap?url=${encodeURIComponent(item.qr)}`)
-					.then(a => a.json()).then(resp => item.refreshDate = cleanedDate(resp.data));
-		}).then(() => setList(list));
-    }, [list]);*/
+		function App() {
+			const [list, setList] = useState([]);
+			const [showAll, setShowAll] = useState(false);
 
-	const [list2, setList2] = useState([]);
-    useEffect(() => {
-        if (list.length > 0) {
-	    list.filter(a => !!a.scrape).forEach(item => 
-                fetch(`https://hilarious-jay-coveralls.cyclic.app/scrape?url=${encodeURIComponent(item.qr)}`)
-		    .then(a => a.json()).then(resp => setList2(l => [...l, ...resp])));
-        }
-    }, [list]);
+			/*useEffect(() => {
+				inSequence(list.filter(a => !a.skipped && a.qr), item => {
+					return fetch(`https://gibo-chl.azurewebsites.net/scrap?url=${encodeURIComponent(item.qr)}`)
+							.then(a => a.json()).then(resp => item.refreshDate = cleanedDate(resp.data));
+				}).then(() => setList(list));
+			}, [list]);*/
 
-    
-  	useEffect(() => {
-    	fetch(url).then(a => a.text()).then(t => setList(JSON.parse(decrypt(t))));
-    },[]);
-	return html`
-        <style>${styles}</style>
-		<div class="collection">
-			${list.filter(c => (!c.skipped && !showSkipped) || (c.skipped && showSkipped)).map(c => Card(c))}
-		</div>
-        <hr>
-            <label>
-            <input type="checkbox" .checked=${showAll} @click="${() => setShowAll(x => !x)}}">
-            show all
-            </label>
-        <hr>
-		<div class="collection">
-			${list2.filter(c => showAll || /^\s*\d{2}\:\d{2}\s*$/.test(c.dateStr)).map(c => Card({qr: c.url, img: c.profileImgUrl, refreshDate: c.dateStr, text: c.location}))}
-		</div>        
-	`; 
-}
+			const [list2, setList2] = useState([]);
+			/*useEffect(() => {
+				if (list.length > 0) {
+				list.filter(a => !!a.scrape).forEach(item => 
+						fetch(`https://hilarious-jay-coveralls.cyclic.app/scrape?url=${encodeURIComponent(item.qr)}`)
+					.then(a => a.json()).then(resp => setList2(l => [...l, ...resp])));
+				}
+			}, [list]);*/
 
-customElements.define('custom-root', component(App));
-    
-    </script>
 
-    <custom-root></custom-root>
+			useEffect(() => {
+				fetch(url).then(a => a.text()).then(t => setList(JSON.parse(decrypt(t))));
+			}, []);
+			return html`
+				<style>${styles}</style>
+				<div class="collection">
+					${list.filter(c => (!c.skipped && !showSkipped) || (c.skipped && showSkipped)).map(c => Card(c))}
+				</div>
+				<hr>
+					<label>
+					<input type="checkbox" .checked=${showAll} @click="${() => setShowAll(x => !x)}}">
+					show all
+					</label>
+				<hr>
+				<div class="collection">
+					${list2.filter(c => showAll || /^\s*\d{2}\:\d{2}\s*$/.test(c.dateStr)).map(c => Card({ qr: c.url, img: c.profileImgUrl, refreshDate: c.dateStr, text: c.location }))}
+				</div>        
+			`;
+		}
+
+		customElements.define('custom-root', component(App));
+
+	</script>
+
+	<custom-root></custom-root>
 
 </body>
+
 </html>
