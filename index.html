@@ -6,180 +6,31 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Q</title>
+	<link rel="stylesheet" href="./style.css" />
+	<script type="module" src="./app.js" defer></script>
 </head>
-
 <body>
 
-	<script type="module">
+	<select>
+		<option value=""  selected>Select your option</option>
+	</select>
+	<p></p>
 
+	<main>
 
-		import { html, component, useState, useEffect } from 'https://unpkg.com/haunted@4.8.0/haunted.js';
-		import crypto from 'https://unpkg.com/crypto-esm@0.0.5/dist/crypto-esm.mjs';
-		const { AES } = crypto;
-
-		let p1 = localStorage.getItem("p1");
-		if (!p1) {
-			p1 = prompt("code");
-			localStorage.setItem("p1", p1);
-		}
-		const pass = p1.substr(2);
-		const url = 'https://kvdb.io/MNUDuMSNBp9ab5f9mbQKTT/' + p1.substr(0, 2);
-
-		const decrypt = text => AES.decrypt(text, pass).toString(crypto.enc.Utf8);
-
-
-		const styles = `
-
-.collection {
-	display: flex;
-	flex-wrap: wrap;
-}
-
-.card {
-	display: inline-block;
-	width: 200px;
-	height: 200px;
-	background-size: cover;
-	position: relative;
-	margin: 5px;
-	border-radius: 5px;
-    cursor: pointer;
-}
-
-@media (max-width: 450px) {
-	.card {
-		width: 100%;
-		border-radius: 0;
-		margin: 0;
-	}
-    .card span {
-        border-radius: 0;
-    }
-}
-
-.card a {
-        font-size: 1.5rem;
-	line-height: 30px;
-	text-decoration: none;
-	color: white;
-	display: inline-block;
-	height: 30px;
-	width: 30px;
-	border-radius: 50%;
-	text-align: center;
-	position: absolute;
-}
-
-a.y {	
-	top: 5px;
-	left: 5px;
-	background-color: CornflowerBlue;
-}
-
-a.qr {
-	top: 40px;
-	left: 5px;
-	background-color: red;
-}
-
-.card footer {
-	position: absolute;
-	right: 0; 
-	bottom: 0;
-	left: 0;
-	background-color: rgba(0,0,0,0.4);
-	color: white;
-	padding: 5px 2px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
-}
-
-.card span {
-	position: absolute;
-	right: 0; 
-	top: 0;
-	background-color: rgba(0,0,0,0.4);
-	color: white;
-	padding: 3px 2px;
-	font-size: x-small;
-}
-
-`;
-
-
-		function inSequence(list, handler) {
-			return list.reduce((p, item) => {
-				return p.then(() => handler(item));
-			}, Promise.resolve()); // initial
-		}
-
-		function cleanedDate(d) {
-			if (!d) return d;
-			return d.replace(/(\w{3})\w+$/g, (_, a) => a).replace(',', '').replace(' - ', ' ');
-		}
-
-		const showSkipped = location.hash === "#skipped";
-
-		const goto = url => evt => {
-			evt.preventDefault();
-			window.open(url, '_blank');
-			return false;
-		}
-
-		const Card = c => html`<div class="card" @click="${goto(c.qr)}" style="background-image: url(${c.img})">
-				${false ? html`<a class="qr" target="_blank" href="${c.qr}">Q</a>` : null}
-				${c.y ? html`<a class="y" target="_blank" href="#" @click="${goto(c.y)}">Y</a>` : null}
-				${c.refreshDate ? html`<span>${c.refreshDate}</span>` : null}
-				<footer>${c.text}</footer>
-			</div>`;
-
-		function App() {
-			const [list, setList] = useState([]);
-			const [showAll, setShowAll] = useState(false);
-
-			/*useEffect(() => {
-				inSequence(list.filter(a => !a.skipped && a.qr), item => {
-					return fetch(`https://gibo-chl.azurewebsites.net/scrap?url=${encodeURIComponent(item.qr)}`)
-							.then(a => a.json()).then(resp => item.refreshDate = cleanedDate(resp.data));
-				}).then(() => setList(list));
-			}, [list]);*/
-
-			const [list2, setList2] = useState([]);
-			/*useEffect(() => {
-				if (list.length > 0) {
-				list.filter(a => !!a.scrape).forEach(item => 
-						fetch(`https://hilarious-jay-coveralls.cyclic.app/scrape?url=${encodeURIComponent(item.qr)}`)
-					.then(a => a.json()).then(resp => setList2(l => [...l, ...resp])));
-				}
-			}, [list]);*/
-
-
-			useEffect(() => {
-				fetch(url).then(a => a.text()).then(t => setList(JSON.parse(decrypt(t))));
-			}, []);
-			return html`
-				<style>${styles}</style>
-				<div class="collection">
-					${list.filter(c => (!c.skipped && !showSkipped) || (c.skipped && showSkipped)).map(c => Card(c))}
-				</div>
-				<hr>
-					<label>
-					<input type="checkbox" .checked=${showAll} @click="${() => setShowAll(x => !x)}}">
-					show all
-					</label>
-				<hr>
-				<div class="collection">
-					${list2.filter(c => showAll || /^\s*\d{2}\:\d{2}\s*$/.test(c.dateStr)).map(c => Card({ qr: c.url, img: c.profileImgUrl, refreshDate: c.dateStr, text: c.location }))}
-				</div>        
-			`;
-		}
-
-		customElements.define('custom-root', component(App));
-
-	</script>
-
-	<custom-root></custom-root>
+<!-- 		<qr-card imgUrl="https://images.pexels.com/photos/85773/pexels-photo-85773.jpeg" title="fleur" description="description"></qr-card>
+		<qr-card imgUrl="https://images.pexels.com/photos/85773/pexels-photo-85773.jpeg" title="fleur" description="description"></qr-card>
+		<qr-card imgUrl="https://images.pexels.com/photos/85773/pexels-photo-85773.jpeg" title="fleur" description="description"></qr-card>
+		<qr-card imgUrl="https://images.pexels.com/photos/85773/pexels-photo-85773.jpeg" title="fleur" description="description"></qr-card>
+		<qr-card imgUrl="https://images.pexels.com/photos/85773/pexels-photo-85773.jpeg" title="fleur" description="description"></qr-card>
+		<qr-card imgUrl="https://images.pexels.com/photos/85773/pexels-photo-85773.jpeg" title="fleur" description="description"></qr-card>
+		<qr-card imgUrl="https://images.pexels.com/photos/85773/pexels-photo-85773.jpeg" title="fleur" description="description"></qr-card>
+		<qr-card imgUrl="https://images.pexels.com/photos/85773/pexels-photo-85773.jpeg" title="fleur" description="description"></qr-card>
+		<qr-card imgUrl="https://images.pexels.com/photos/85773/pexels-photo-85773.jpeg" title="fleur" description="description"></qr-card>
+		<qr-card imgUrl="https://images.pexels.com/photos/85773/pexels-photo-85773.jpeg" title="fleur" description="description"></qr-card> -->
+	</main>
 
 </body>
-
 </html>
+
+

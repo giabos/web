@@ -1,0 +1,16 @@
+
+:root {
+	font-family: 'Trebuchet MS', sans-serif;
+}
+
+main {
+    padding: 1rem;
+    display: grid;
+    gap: 0.8rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 300px));
+}
+
+
+qr-card {
+	cursor: pointer;
+}
