@@ -21,7 +21,7 @@ fetch(url).then(a => a.text()).then(t => {
 
 let urls = [];
 $('select').addEventListener('change', evt => {
-	$('main').replaceChildren(div({'class': 'lds-ripple'},div(),div(),div())); //spinner
+	$('main').replaceChildren(div({'class': 'spinner-container'}, div({'class': 'lds-ripple'},div(),div(),div()))); //spinner
 	getJson('https://wratfxtipxqpqtqynfex.supabase.co/functions/v1/qr/scrape?url=' + evt.target.value).then((resp) => {
 		urls = resp.map(a => a.url);
 		$('main').replaceChildren(...resp.map(r => 
