@@ -1,45 +1,44 @@
-
- article.card {
+article.card {
 	display: flex;
 	flex-direction: column;
-	/*max-width: 200px;*/
 	background-color: white;
-	box-shadow: 4px 4px 5px 1px rgba(125,121,121,0.75);
-	-webkit-box-shadow: 4px 4px 5px 1px rgba(125,121,121,0.75);
-	-moz-box-shadow: 4px 4px 5px 1px rgba(125,121,121,0.75);
-}
+	box-shadow: 4px 4px 5px 1px rgba(125, 121, 121, 0.75);
+	-webkit-box-shadow: 4px 4px 5px 1px rgba(125, 121, 121, 0.75);
+	-moz-box-shadow: 4px 4px 5px 1px rgba(125, 121, 121, 0.75);
 
-article.card img {
-	flex: 0 0 300px;
-	height: 100%;
-	object-fit: cover;
-}
+	img {
+		flex: 0 0 300px;
+		height: 100%;
+		object-fit: cover;
+	}
 
-article.card footer {
-	display: flex;
-	flex-direction: column;
-	gap: 5px;
-	padding: 5px 10px;
-}
+	footer {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+		padding: 5px 10px;
+	}
 
-article.card div {
-	display: flex;
-	justify-content: space-between;
-	height: 20px;
-}
+	div {
+		display: flex;
+		justify-content: space-between;
+		height: 20px;
+	}
 
-article.card h4,p {
-	margin: 0;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
+	h4,
+	p {
+		margin: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
 
-article.card h4 {
-	font-weith: 600;
-	font-size: 12px;
-}
+	h4 {
+		font-weith: 600;
+		font-size: 12px;
+	}
 
-article.card p {
-	font-size: 10px;
+	p {
+		font-size: 10px;
+	}
 }
