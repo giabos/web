@@ -44,3 +44,26 @@ export const $ = (selector) => {
     }
     return elements.length === 1 ? elements[0] : Array.from(elements);
 };
+
+export const wc = (name, render, observedAttributes = []) => customElements.define(name, class extends HTMLElement {
+    static observedAttributes = observedAttributes;
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+    }
+	get attrs () {
+      return Array.from(this.attributes).reduce((c, a) => ({...c, [a.name ]:a.value}), {});
+    }
+	attributeChangedCallback (name, oldValue, newValue) {
+      render(this.shadowRoot, this.attrs);
+	}
+    connectedCallback() {
+      render(this.shadowRoot, this.attrs);
+    }
+});
+
+/*
+$('custom-root').setAttribute('test', 'abc');
+wc('custom-root', (parent, attrs) => parent.replaceChildren(div('test'+attrs.test)), ['test']);
+$('custom-root').setAttribute('test', 'def');
+*/
