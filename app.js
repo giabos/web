@@ -40,10 +40,16 @@ $('select').addEventListener('change', (evt) => {
                 ),
             ),
         );
-    });
+    }).catch(e => {
+		$('main').replaceChildren(div()); // remove spinner
+		window.alert('error');
+	});
 });
 
 $('main').addEventListener('click', (evt) => {
     const idx = $('main qr-card').findIndex((i) => i === evt.target);
     window.open(urls[idx], '_blank').focus();
 });
+
+
+
