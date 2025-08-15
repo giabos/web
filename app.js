@@ -35,6 +35,7 @@ $('select').addEventListener('change', (evt) => {
                         imgUrl: r.profileImgUrl,
                         title: r.location,
                         description: r.dateStr,
+						color: /^\d{1,2}:\d{2}\s*$/.test(r.dateStr) ? 'black' : 'grey',
                     },
                     span(r.isSafe ? '✅' : ''),
                 ),
